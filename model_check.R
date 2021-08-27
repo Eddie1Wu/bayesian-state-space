@@ -167,7 +167,7 @@ if (FALSE) {
 
   # Distribution of parameters
   plot(fit_prior, pars = param_plot, cex.lab = 1.5)
-  plot(fit_prior, pars = c(param_plot, paste0(param_ind, "[1]")), plotfun = "hist")
+  plot(fit_prior, pars = param_plot, plotfun = "hist")
   
   # Posterior predictive distribution
   lapply(pt[1:length(pt)],

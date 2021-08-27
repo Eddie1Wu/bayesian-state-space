@@ -51,14 +51,58 @@ df$ID <- 1:length(df$Patient)
 # Linear model of SASSAD on 28 days of Bother
 tmp <- select(df, SASSAD | starts_with("Bother"))
 lm.fit = lm(SASSAD ~ ., data = tmp)
-stargazer(lm.fit, type = "html", align = TRUE, out = "28days.htm")
+
+out <- coef(summary(lm.fit)) # Extract coefficients and standard errors
+estimate <- out[,1]
+stderror <- out[,2]
+df <- data.frame(estimate, stderror) # Create data frame for plotting
+df$indep_var <- rownames(df)
+df <- df[2:length(df$estimate),]
+df$max <- df$estimate + 2*df$stderror
+df$min <- df$estimate - 2*df$stderror
+df$day <- 1:length(df$estimate)
+df_highlight <- data.frame(subset(df, df$indep_var == "Bother.28"))
+
+ggplot(data = df, aes(x = day, y = estimate, ymin = min, ymax = max)) +
+  geom_pointrange(alpha = 0.5) +
+  geom_pointrange(data = df_highlight, 
+                  aes(x = day, y = estimate,
+                      ymin = min, ymax = max), color = "red") +
+  geom_hline(yintercept = 0) +
+  coord_flip() +
+  theme_bw(base_size = 20) +
+  # theme(panel.grid.minor.x = element_blank(),
+  #       axis.text.y = element_blank()) +
+  ylab("Coefficient size with 2 std dev.") + 
+  xlab("Day in ascending order") +
+  scale_x_continuous(breaks = seq(1, 28, by = 1))
+# stargazer(lm.fit, type = "html", align = TRUE, out = "28days.htm")
+
 
 
 # Best variable selection by LASSO
 tmp.y <- data.matrix(tmp[,colnames(tmp) == "SASSAD"])
 tmp.x <- data.matrix(tmp[, !(colnames(tmp) == "SASSAD")])
 lasso.fit <- cv.glmnet(tmp.x, tmp.y, type.measure = "mse", alpha = 1, family = "gaussian")
-coef(lasso.fit)
+out <- coef(lasso.fit)
+Day <- 1:(length(out)-1)
+df <- data.frame(Day)
+for (i in 1:length(df$Day)) {
+  df$estimate[i] <- out[i+1]
+}
+
+
+ggplot(data = df, aes(x=Day, y = estimate)) +
+  geom_bar(stat="identity") +
+  coord_flip() +
+  theme_bw(base_size = 20) +
+  # theme(panel.grid.minor.x = element_blank(),
+  #       axis.text.y = element_blank()) +
+  ylab("Coefficient size") + 
+  xlab("Day in ascending order") +
+  scale_x_continuous(breaks = seq(1, 28, by = 1))
+  
+
 
 
 # Linear model of SASSAD on weekly mean and max of Bother
@@ -135,7 +179,9 @@ ggplot(df, aes(x = Bother.28, y = SASSAD)) +
   geom_smooth(method = "gam", aes(colour = "Non-linear")) +
   geom_smooth(method = "lm", aes(colour = "Linear")) + 
   scale_colour_manual(name="legend", values=c("blue", "red")) +
-  labs(x = "Bother")
+  labs(x = "Bother") +
+  theme_bw(base_size = 20)
+  
   
   
   

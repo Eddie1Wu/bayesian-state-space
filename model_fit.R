@@ -211,7 +211,8 @@ if (FALSE) {
                      + coord_flip(ylim = c(0, 1)),
                      pl[[2]] 
                      + labs(y = expression(paste("Treatment response (", w[T]^(k), ")", sep = ""))) 
-                     + coord_flip(ylim = c(-2.5, 1.5)),
+                     + coord_flip(ylim = c(-2.5, 1.5))
+                     + geom_hline(yintercept = 0, color = "red"),
                      pl[[3]] 
                      + labs(y = expression(paste("Flare trigger (", Lam^(k), ")", sep = ""))) 
                      + coord_flip(ylim = c(1, 8)),

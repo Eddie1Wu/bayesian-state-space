@@ -90,10 +90,13 @@ if (FALSE) {
   }
   df_plot <- cbind(df_plot, out)
   colnames(df_plot) <- c("iteration", "model", "val_min", "val", "val_max")
-
+  df_plot$val_min <- sqrt(df_plot$val_min)
+  df_plot$val_max <- sqrt(df_plot$val_max)
+  df_plot$val <- sqrt(df_plot$val)
+  
   ggplot(data = df_plot, aes(x = iteration, group = model, color = model)) +
-    geom_pointrange(aes(y = val, ymin = val_min, ymax = val_max)) +
-    labs(y = expression("Mean Squared Error"), x = expression("Iteration")) +
+    geom_pointrange(aes(y = val, ymin = val_min, ymax = val_max), alpha = 0.5) +
+    labs(y = expression("Root Mean Square Error"), x = expression("Iteration")) +
     theme_grey(base_size = 22)
 }
 
@@ -166,6 +169,69 @@ if (FALSE) {
     scale_color_manual(values = colors) +
     theme_grey(base_size = 22)
 }
+
+
+
+
+# Param plot Lme_OrdinalMC -----------------------------------------------------
+
+## Mixed effects model params plot
+mdl <- "Lme_OrdinalMC"
+par <- c("wS", "mu_bs", "sigma_bs")
+
+file <- file.path("Result", paste0("fit_", mdl, ".rds"))
+fit <- readRDS(file)
+
+if (FALSE) {
+  
+  par <- rstan::extract(fit, pars = par)
+  df1 <- data.frame(par[[1]])
+  df1$mu_bs <- par[[2]]
+  df1$sigma_bs <- par[[3]]
+  colnames(df1) <- c("wS", "mu_bs", "sigma_bs")
+  
+  ggplot(df1, aes(x = wS)) +
+    geom_histogram(fill="white", color = "orange", position="identity", bins=35) +
+    theme_grey(base_size = 22)
+  
+  ggplot(df1, aes(x = mu_bs)) +
+    geom_histogram(fill="white", color = "orange", position="identity", bins=35) +
+    theme_grey(base_size = 22)
+  
+  ggplot(df1, aes(x = sigma_bs)) +
+    geom_histogram(fill="white", color = "orange", position="identity", bins=35) +
+    theme_grey(base_size = 22)
+}
+
+## Bother ordinal logistic cut points 
+# I forgot to save the cut points for the fully estimated Lme_OrdinalMC, as such, 
+# to plot the density for Lme_OrdinalMC, one could take Lme_OrdinalAR fit to plot
+# those and the output will be very similar. Alternatively, One could take the
+# 10th iteration par file from forward chaining for Lme_OrdinalMC 
+# and plot that. The output will be the same.
+
+# mdl <- "Lme_OrdinalAR"
+# par <- c("ct")
+# file <- file.path("Result", paste0("fit_", mdl, ".rds"))
+# fit <- readRDS(file)
+# 
+# if (FALSE) {
+#   
+#   par <- rstan::extract(fit, pars = par)
+#   df <- data.frame(par[[1]])
+#   colnames(df) <- c("point1", "point2", "point3", "point4", "point5", "point6",
+#                     "point7", "point8", "point9", "point10")
+#   df$id <- 1:length(df$point1)
+#   
+#   df <- melt(df, id.vars = c("id"), 
+#              variable.name = "model", 
+#              value.name = "value")
+#   
+#   ggplot(df, aes(x=value, color=model)) +
+#     geom_histogram(fill="white", alpha=0.5, position="identity", binwidth = 0.05) +
+#     theme_grey(base_size = 22)
+# }
+
 
 
 

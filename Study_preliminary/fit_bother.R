@@ -66,7 +66,22 @@ y = data.matrix(df[, colnames(df) == "Bother.28"])
 x = data.matrix(dplyr::select(df, ends_with("Total")))
 fit <- cv.glmnet(x, y, type.measure="mse", alpha=1, family = "gaussian")
 lasso.fit <- glmnet(x, y, family = "gaussian", alpha = 1, lambda = fit$lambda.1se)
-coef(lasso.fit)
+out <- coef(lasso.fit)
+Sign <- c("Erythema", "Exudation", "Excoriation", "Dryness", "Cracking", "Lichenification")
+df <- data.frame(Sign)
+for (i in 1:length(df$Sign)) {
+  df$estimate[i] <- out[i+1]
+}
+
+ggplot(data = df, aes(x=Sign, y = estimate)) +
+  geom_bar(stat="identity") +
+  coord_flip() +
+  theme_bw(base_size = 20) +
+  # theme(panel.grid.minor.x = element_blank(),
+  #       axis.text.y = element_blank()) +
+  ylab("Coefficient size") + 
+  xlab("SASSAD sign")
+  # scale_x_continuous(breaks = seq(1, 6, by = 1))
 
 
 

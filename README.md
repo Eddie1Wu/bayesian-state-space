@@ -45,11 +45,11 @@ The SWET dataset is loaded from a proprietary package called `TanakaData` which 
 As this project builds on the foundation of Hurault et al., I have reused or adapted some functions from Hurault et al. The reused functions include:
  - `plot_patient_coef`: uses ggplot2 to plot patients' individual parameter estimates from a fitted model object.
  - `generate_treatment`: this function is for creating fake data of the binary treatment variable. 
- - `compute_pmf`: this functions computes the probability mass of each of the eleven categories of Bother with a posterior sample.
+ - `compute_pmf`: this function computes the probability mass of each of the eleven categories of Bother with a posterior sample.
 
 The adapted functions include: 
  - `get_index`: creates a series of "patient, day" pairs.
- - `extract parameters`: extracts the parameters from a fitted Stan object and assign "patient, day" pairs to the parameters for indexing.
+ - `extract parameters`: extracts the parameters from a fitted Stan object and assigns "patient, day" pairs to the parameters for indexing.
  - `prepare_ppc`: prepares a data frame for plotting posterior predictive checks using a fitted Stan object and its parameters.
  - `plot_ppc`: uses ggplot2 to plot the posterior check graph.
 
